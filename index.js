@@ -12,14 +12,15 @@ function generateData(nbr) {
 }
 
 const datas = {
+  'test': [1, 2, 3, 4, 5],
   'dev': generateData(5),
   'preprod': generateData(10),
   'prod': generateData(100),
 };
 
 const transformers = {
-  'consumer': data => ({ label: 'raw values for consumer', caller: 'consumer', env: env, values: data }),
-  'partner': data => ({ label: 'tuned values for privileged partner', caller: 'partner', env: env, values: data.map(v => v + 100) }),
+  'external': data => ({ label: 'raw values for external caller', caller: 'external', env: env, values: data }),
+  'internal': data => ({ label: 'tuned values for internal caller', caller: 'internal', env: env, values: data.map(v => v + 100) }),
   'none': _ => ({ error: 'unknown caller' }),
 };
 
