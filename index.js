@@ -1,7 +1,11 @@
 const http = require('http');
+const url = require('url')
 
 const port = process.env.PORT || 3000;
 const env = process.env.ENV || 'dev';
+
+
+
 
 function generateData(nbr) {
   const items = [];
@@ -32,8 +36,30 @@ const requestHandler = (request, response) => {
   response.write(JSON.stringify(transformer(data)));
   response.end();
 };
+const healthHandler = (_, response) => {
+  response.writeHead(200, { 'Content-Type': 'application/json' });
+  response.write(JSON.stringify({health: 'ok'}));
+  response.end();
+};
 
-const server = http.createServer(requestHandler);
+const routes = {
+  '/': requestHandler,
+  '/health': healthHandler
+}
+
+const server = http.createServer((request, response) => {
+  const parts = url.parse(request.url);
+  console.log({parts})
+  const route = routes[parts.pathname]; 
+  
+  if (route) {
+    route(request, response);
+  } else {
+    response.writeHead(404, { 'Content-Type': 'application/json' });
+    response.write(JSON.stringify({ error: 'Not Found' }));
+    response.end();
+  }
+});
 server.listen(port, (err) => {
   if (err) {
     return console.log('something bad happened', err)
